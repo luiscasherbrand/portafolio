@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Luis Arturo Casher | Portafolio</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Inter:wght@300;400;800&display=swap');
+        
+        :root { --gold: #D4AF37; }
+        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
+        
+        .huge-title { font-family: 'Big Shoulders Display', cursive; line-height: 0.85; }
+        .gold-accent { color: var(--gold); }
+        
+        #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; opacity: 0.4; }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 5rem 6%;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        section:first-of-type {
+            padding-top: 7rem;
+        }
+
+        @media (min-width: 768px) {
+            section { padding: 8rem 10%; }
+            section:first-of-type {
+                padding-top: 10rem;
+            }
+        }
+
+        .date-tag { display: inline-block; padding: 0.5rem 1rem; border-left: 2px solid var(--gold); background: rgba(212, 175, 55, 0.1); margin-bottom: 2rem; font-size: 0.75rem; letter-spacing: 0.3em; font-weight: 800; }
+
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1); }
+        .is-visible { opacity: 1; transform: translateY(0); }
+
+        .link-card { transition: all 0.4s ease; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); cursor: pointer; }
+        .link-card:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.05); transform: translateY(-5px); }
+
+        .btn-minimal {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 1.5rem 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .btn-minimal:hover {
+            border-color: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .profile-frame {
+            position: relative;
+            border: 1px solid var(--gold);
+            padding: 10px;
+        }
+        @media (min-width: 768px) {
+            .profile-frame { padding: 15px; }
+        }
+
+        .profile-frame img {
+            width: 100%;
+            height: auto;
+            filter: grayscale(100%) contrast(110%);
+            transition: 0.5s;
+        }
+        .profile-frame:hover img { filter: grayscale(0%); }
+
+        @media (max-width: 767px) {
+            .huge-title { line-height: 0.95; }
+            
+            nav { 
+                padding: 0.75rem 1rem !important; 
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5rem;
+            }
+            
+            nav .huge-title { 
+                font-size: 1rem !important; 
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            
+            nav > div:last-child { 
+                font-size: 0.45rem !important; 
+                letter-spacing: 0.1em !important;
+                opacity: 0.7;
+                text-align: right;
+                white-space: nowrap;
+                flex-shrink: 1;
+                line-height: 1.2;
+            }
+        }
+
+        .clickable-word {
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-color: var(--gold);
+            transition: color 0.3s;
+        }
+        .clickable-word:hover {
+            color: var(--gold);
+        }
+
+        #image-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+        }
+        #image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        /* BLOQUEADOR - VISIBLE POR DEFECTO CON !IMPORTANT */
+        #chrome-blocker {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: #000 !important;
+            z-index: 999999 !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 1.5rem !important;
+        }
+
+        #chrome-blocker.hidden-blocker {
+            display: none !important;
+        }
+
+        .chrome-blocker-content {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .chrome-logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #4285F4 0%, #34A853 25%, #FBBC05 50%, #EA4335 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 60px rgba(66, 133, 244, 0.5);
+            position: relative;
+        }
+
+        .chrome-logo::before {
+            content: '';
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            background: #000;
+            border-radius: 50%;
+        }
+
+        .chrome-logo::after {
+            content: 'G';
+            position: relative;
+            font-size: 2rem;
+            font-weight: 900;
+            color: #fff;
+            z-index: 1;
+        }
+
+        .blocker-title {
+            font-family: 'Big Shoulders Display', cursive;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        .blocker-message {
+            color: #9CA3AF;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            padding: 0 0.5rem;
+        }
+
+        .chrome-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, #4285F4, #34A853);
+            color: white;
+            padding: 1.25rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(66, 133, 244, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .chrome-button:active {
+            transform: scale(0.98);
+        }
+
+        .manual-instructions {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .manual-instructions p {
+            font-size: 0.8rem;
+            color: #6B7280;
+            margin-bottom: 1rem;
+        }
+
+        .copy-url-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.85rem;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 0.75rem;
+        }
+
+        .copy-url-btn.copied {
+            background: #34A853;
+            border-color: #34A853;
+        }
+
+        /* CONTENIDO - OCULTO POR DEFECTO */
+        #main-content {
+            display: none !important;
+        }
+
+        #main-content.visible-content {
+            display: block !important;
+        }
+
+        @media (max-width: 767px) {
+            .blocker-title {
+                font-size: 1.75rem;
+            }
+            .chrome-logo {
+                width: 80px;
+                height: 80px;
+            }
+            .chrome-logo::after {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BLOQUEADOR - VISIBLE SIEMPRE AL CARGAR -->
+    <div id="chrome-blocker">
+        <div class="chrome-blocker-content">
+            <div class="chrome-logo"></div>
+            
+            <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+            
+            <h1 class="blocker-title gold-accent">Solo Disponible en Google Chrome</h1>
+            
+            <p class="blocker-message">
+                Este portafolio requiere <strong>Google Chrome</strong> para funcionar correctamente. 
+                Por favor, abre esta página en Chrome para continuar.
+            </p>
+
+            <button onclick="openInChrome()" class="chrome-button" id="openChromeBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2.4c5.302 0 9.6 4.298 9.6 9.6s-4.298 9.6-9.6 9.6S2.4 17.302 2.4 12 6.698 2.4 12 2.4z"/>
+                </svg>
+                Abrir en Chrome
+            </button>
+
+            <div class="manual-instructions">
+                <p><strong>O copia la URL manualmente:</strong></p>
+                <button onclick="copyURL()" class="copy-url-btn" id="copyBtn">
+                    📋 Copiar Dirección Web
+                </button>
+                <p style="font-size: 0.75rem; margin: 0;">
+                    Luego abre Chrome y pega la dirección
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div id="main-content">
+        <canvas id="bg-canvas"></canvas>
+
+        <div id="image-modal" onclick="this.style.display='none'">
+            <img id="modal-img" src="" alt="Vista Previa">
+        </div>
+
+        <nav class="fixed top-0 w-full z-50 p-8 flex justify-between items-center bg-black/80 backdrop-blur-md border-b border-white/5">
+            <span class="huge-title text-2xl md:text-3xl tracking-tighter uppercase">Luis Arturo <span class="gold-accent">Casher</span></span>
+            <div class="text-[8px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.4em] opacity-60 text-right font-bold">Brand Manager | Growth Strategist</div>
+        </nav>
+
+        <section>
+            <div class="grid md:grid-cols-2 gap-12 md:gap-20 w-full items-center reveal">
+                <div>
+                    <h1 class="huge-title text-7xl md:text-[13rem] uppercase mb-8">IMPACTO<br><span class="gold-accent">REAL.</span></h1>
+                    <p class="max-w-md text-gray-400 text-lg md:text-xl font-light leading-relaxed border-l border-gold pl-6">Estratega especializado en transformar marcas técnicas y de lujo en motores de venta.</p>
+                </div>
+                <div class="flex flex-col gap-10 md:gap-12 border-l border-white/10 pl-8 md:pl-12">
+                    <div><span class="text-6xl md:text-8xl font-black block">+3M MXN</span><p class="text-[10px] uppercase tracking-widest text-gold mt-2">Ticket Promedio Clientes AAA</p></div>
+                    <div><span class="text-6xl md:text-8xl font-black block">15 AÑOS</span><p class="text-[10px] uppercase tracking-widest text-gold mt-2">DE EXPERIENCIA</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-zinc-950/40">
+            <div class="grid md:grid-cols-2 gap-12 md:gap-16 w-full items-center reveal">
+                <div class="order-2 md:order-1">
+                    <span class="gold-accent font-bold tracking-widest uppercase text-xs">Sobre mi</span>
+                    <h2 class="huge-title text-6xl md:text-9xl uppercase mt-4 mb-8">Luis Arturo<br>Casher</h2>
+                    <div class="space-y-6 text-gray-300 text-base md:text-lg leading-relaxed max-w-xl">
+                        <p>Con <span class="text-white font-bold">33 años</span> de edad, he consolidado una career de 15 años en el medio publicitario donde la precisión técnica se encuentra con la narrativa emocional. Mi enfoque no es solo "vender", es <span class="gold-accent font-bold">dominar mercados</span> mediante estrategias de crecimiento diseñadas a medida.</p>
+                        <p>Mi pasión por el <span class="text-white font-bold">marketing y el diseño</span> nació de una necesidad fundamental: la claridad. Creo que un buen diseño debe de trascender y una buena estrategia debe ser imparable. Pero sobre todo, debe despertar emociones que generen deseos.</p>
+                        <p class="italic text-gray-500 font-light text-xl md:text-2xl">"No diseño solo imágenes, diseño resultados financieros."</p>
+                    </div>
+                </div>
+                <div class="order-1 md:order-2 flex justify-center">
+                    <div class="profile-frame w-full max-w-[320px] md:max-w-md">
+                        <img src="https://lh3.googleusercontent.com/d/1SWLZCIHv7NgYBOQF9h9_ZwoPNqq5cCwE" alt="Luis Arturo Casher" onerror="this.src='https://via.placeholder.com/600x800?text=LUIS+ARTURO+CASHER'">
+                        <div class="absolute -bottom-4 -left-4 bg-gold text-white px-4 py-2 font-black text-[10px] md:text-xs tracking-tighter uppercase italic">Creatividad Estratégica</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="w-full reveal">
+                <span class="gold-accent font-bold tracking-widest uppercase text-xs mb-4 block">Especialización</span>
+                <h2 class="huge-title text-7xl md:text-9xl uppercase mb-16">Servicios <span class="gold-accent">Elite</span></h2>
+                
+                <div class="grid md:grid-cols-3 gap-0 border-t border-white/10">
+                    <div class="p-10 border-b md:border-b-0 md:border-r border-white/10 hover:bg-zinc-900/30 transition-colors group">
+                        <span class="text-gold font-black text-4xl block mb-6 opacity-40 group-hover:opacity-100 transition-opacity">01</span>
+                        <h3 class="text-2xl font-bold uppercase tracking-tighter mb-4">Brand Engineering</h3>
+                        <p class="text-gray-400 font-light leading-relaxed">
+                            Sistemas visuales y narrativas de marca que posicionan productos de alto ticket ante el consumidor correcto.
+                        </p>
+                        <ul class="mt-6 space-y-2 text-[10px] uppercase tracking-widest text-gold/60">
+                            <li>• Identidad Visual Premium</li>
+                            <li>• Arquitectura de Marca</li>
+                            <li>• Copywriting de Ventas</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-10 border-b md:border-b-0 md:border-r border-white/10 hover:bg-zinc-900/30 transition-colors group">
+                        <span class="text-gold font-black text-4xl block mb-6 opacity-40 group-hover:opacity-100 transition-opacity">02</span>
+                        <h3 class="text-2xl font-bold uppercase tracking-tighter mb-4">Growth Strategy</h3>
+                        <p class="text-gray-400 font-light leading-relaxed">
+                            Embudos de conversión que transforman atención en capital. Especialista en leads AAA para cierres complejos.
+                        </p>
+                        <ul class="mt-6 space-y-2 text-[10px] uppercase tracking-widest text-gold/60">
+                            <li>• Performance Marketing</li>
+                            <li>• Lead Generation</li>
+                            <li>• CRM & Automation</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-10 hover:bg-zinc-900/30 transition-colors group">
+                        <span class="text-gold font-black text-4xl block mb-6 opacity-40 group-hover:opacity-100 transition-opacity">03</span>
+                        <h3 class="text-2xl font-bold uppercase tracking-tighter mb-4">Digital Production</h3>
+                        <p class="text-gray-400 font-light leading-relaxed">
+                            Ejecución técnica: desde fotografía industrial de precisión hasta plataformas web optimizadas para conversión.
+                        </p>
+                        <ul class="mt-6 space-y-2 text-[10px] uppercase tracking-widest text-gold/60">
+                            <li>• Fotografía Industrial</li>
+                            <li>• UI/UX Design</li>
+                            <li>• Catálogos Técnicos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="max-w-6xl w-full mx-auto reveal">
+                <span class="date-tag gold-accent uppercase">Marzo 2024 — Actualidad</span>
+                <h2 class="huge-title text-7xl md:text-9xl uppercase mb-10">Colag Diesel</h2>
+                <div class="grid md:grid-cols-2 gap-10 md:gap-16 items-start">
+                    <div class="space-y-6 text-gray-300 text-lg md:text-xl font-light">
+                        <p>• Especialista en <strong>fidelización de nichos técnicos</strong> vía WhatsApp Marketing.</p>
+                        <p>• Creación y gestión integral de catálogo visual web y fotografía de precisión para el ramo industrial.</p>
+                        <p>• Optimización de la experiencia del cliente en canales digitales.</p>
+                    </div>
+                    <div class="flex flex-col gap-4">
+                        <a href="https://colagdiesel.com/" target="_blank" class="link-card p-6 font-bold uppercase text-[10px] tracking-widest text-center">Ver Sitio Web</a>
+                        <a href="https://www.instagram.com/colagdiesel/" target="_blank" class="link-card p-6 font-bold uppercase text-[10px] tracking-widest text-center">Contenido Instagram</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="max-w-6xl w-full mx-auto reveal">
+                <span class="date-tag gold-accent uppercase">Marzo 2022 — Diciembre 2024</span>
+                <h2 class="huge-title text-7xl md:text-9xl uppercase mb-10">Colegio EXXI</h2>
+                <div class="grid md:grid-cols-2 gap-10 md:gap-16 items-start">
+                    <div class="space-y-6">
+                        <p class="text-2xl md:text-3xl text-gray-400 italic font-light">"Fortalecimiento de identidad y captación de alumnos."</p>
+                        <ul class="space-y-4 text-gray-300 text-lg">
+                            <li>• Diseño de materiales gráficos institucionales.</li>
+                            <li>• Estrategias de interacción en redes sociales.</li>
+                            <li>• Producción de Reels y video marketing de alto impacto.</li>
+                        </ul>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <a href="https://www.instagram.com/p/ChqEPWItuK3/" target="_blank" class="link-card aspect-video flex items-center justify-center text-[10px] font-bold text-center p-4 uppercase">REEL PROSPECCIÓN</a>
+                        <a href="https://www.instagram.com/reel/Ci3gaG9OzLq/" target="_blank" class="link-card aspect-video flex items-center justify-center text-[10px] font-bold text-center p-4 uppercase">VIDEO CAMPAÑA</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="byo-section">
+            <div class="max-w-6xl w-full mx-auto reveal">
+                <span class="date-tag text-zinc-500 uppercase">Junio 2020 — Marzo 2022</span>
+                <h2 class="huge-title text-7xl md:text-9xl uppercase mb-10">Grupo BYO</h2>
+                <div class="grid md:grid-cols-12 gap-8 md:gap-12 items-center mb-12">
+                    <div class="md:col-span-8 space-y-8">
+                        <p class="text-3xl md:text-4xl font-bold leading-tight uppercase">
+                            Estrategia para <span class="gold-accent">Inversionistas AAA</span> <br class="hidden md:block"> con propiedades de +$3M MXN.
+                        </p>
+                        <p class="text-lg md:text-xl text-gray-400 leading-relaxed">
+                            Creador de <strong class="clickable-word" onclick="showImage('https://lh3.googleusercontent.com/d/1JpOPOXvlq2RHTWMNYgc2oOMbIgCiFTEn')">"Real Estate, Whisky & Art"</strong> e <strong class="clickable-word" onclick="showImage('https://lh3.googleusercontent.com/d/1DamvBnQ-DIb3l0ch-nSp93YiCaj8bWtX')">"Inverzyopoli"</strong>: gamificación de retornos de inversión en tiempo real y experiencias de lujo con cobertura en medios élite <strong>(Gente Bien)</strong>.
+                        </p>
+                        
+                        <div class="flex flex-wrap gap-6 md:gap-8 pt-4">
+                            <a href="https://www.youtube.com/watch?v=Hz4INWmMmpU" target="_blank" class="underline gold-accent font-bold text-[10px] md:text-sm tracking-widest uppercase">Video Invitación</a>
+                            <button onclick="openByoViewer()" class="underline text-white font-bold text-[10px] md:text-sm tracking-widest uppercase cursor-pointer">Nota Prensa (Revista)</button>
+                            <a href="https://www.facebook.com/media/set/?vanity=GrupoBYO&set=a.3814103071937414" target="_blank" class="underline text-white font-bold text-[10px] md:text-sm tracking-widest uppercase">Galería Evento</a>
+                        </div>
+                        
+                        <div class="pt-6 border-t border-white/5">
+                            <p class="text-gray-400 text-base md:text-lg leading-relaxed">
+                                Adicionalmente, lideré el desarrollo conceptual integral de proyectos inmobiliarios, creando el <strong class="text-white">Nombre</strong>, el <strong class="text-white">Branding</strong> y las <strong class="text-white">Presentaciones Comerciales</strong> estratégicas de dichos desarrollos.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="md:col-span-4 p-8 md:p-10 border-l border-gold bg-zinc-900/50 flex flex-col justify-end min-h-[200px] md:min-h-[250px]">
+                        <span class="text-[10px] text-gold uppercase tracking-widest mb-4">Hito Clave</span>
+                        <p class="text-xl md:text-2xl font-bold leading-tight uppercase">Cierres de venta mediante experiencias inmersivas.</p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <button onclick="openProject('https://heyzine.com/flip-book/e1ab182b35.html', 'PRESENTACIÓN DIVERSO')" class="btn-minimal">
+                        <span class="text-[10px] md:text-xs font-extrabold tracking-[0.2em] uppercase">PRESENTACIÓN DIVERSO</span>
+                        <span class="text-gold font-black text-[9px] tracking-widest">VER +</span>
+                    </button>
+                    <button onclick="openProject('https://heyzine.com/flip-book/f30c995c9a.html', 'PRESENTACIÓN MOOD')" class="btn-minimal">
+                        <span class="text-[10px] md:text-xs font-extrabold tracking-[0.2em] uppercase">PRESENTACIÓN MOOD</span>
+                        <span class="text-gold font-black text-[9px] tracking-widest">VER +</span>
+                    </button>
+                </div>
+
+                <div id="project-viewer" class="hidden mt-6 w-full h-[500px] md:h-[650px] border border-gold/30 bg-zinc-900 rounded overflow-hidden shadow-2xl">
+                    <div class="flex justify-between items-center bg-black/90 p-4 border-b border-white/10">
+                        <span id="project-label" class="text-[10px] uppercase tracking-widest text-gold font-bold italic"></span>
+                        <button onclick="closeProject()" class="text-white hover:text-red-500 uppercase text-[9px] font-black tracking-widest">[ CERRAR ]</button>
+                    </div>
+                    <iframe id="iframe-project" src="" style="width: 100%; height: 100%; border: none;" allowfullscreen="allowfullscreen" allow="clipboard-write" scrolling="no"></iframe>
+                </div>
+
+                <div id="byo-viewer" class="hidden mt-10 w-full h-[500px] border border-gold/30 bg-zinc-900 rounded overflow-hidden shadow-2xl">
+                    <div class="flex justify-between items-center bg-black/80 p-3 border-b border-white/10">
+                        <span class="text-[9px] uppercase tracking-widest text-gold font-bold italic">Revista Gente Bien - Nota de Prensa</span>
+                        <button onclick="closeByoViewer()" class="text-white hover:text-red-500 uppercase text-[9px] font-black tracking-widest">[ Cerrar ]</button>
+                    </div>
+                    <iframe id="iframe-byo" src="" style="width: 100%; height: 100%; border: none;" allowfullscreen="allowfullscreen" allow="clipboard-write" scrolling="no"></iframe>
+                </div>
+            </div>
+        </section>
+
+        <section class="relative overflow-hidden">
+            <div class="max-w-6xl w-full mx-auto reveal">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+                    <div>
+                        <span class="date-tag gold-accent uppercase">Septiembre 2019 — Junio 2020</span>
+                        <h2 class="huge-title text-7xl md:text-[10rem] uppercase">Grandioso</h2>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-gold font-bold tracking-widest uppercase text-xs">Rol</span>
+                        <p class="text-xl uppercase font-light">Growth & Brand Leader</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+                    <div class="p-6 border border-white/10 bg-zinc-900/50">
+                        <span class="text-[10px] text-gold uppercase tracking-widest">Inversión Inicial</span>
+                        <p class="text-3xl md:text-5xl font-black mt-2">$6,000</p>
+                    </div>
+                    <div class="p-6 border border-white/10 bg-zinc-900/50">
+                        <span class="text-[10px] text-gold uppercase tracking-widest">ROI Inicial</span>
+                        <p class="text-3xl md:text-5xl font-black mt-2">94.5%</p>
+                    </div>
+                    <div class="p-6 border border-white/10 bg-zinc-900/50">
+                        <span class="text-[10px] text-gold uppercase tracking-widest">Fuerza Ventas</span>
+                        <p class="text-3xl md:text-5xl font-black mt-2">1 <span class="text-lg opacity-40">→</span> 12</p>
+                    </div>
+                    <div class="p-6 border border-gold bg-gold text-black">
+                        <span class="text-[10px] uppercase font-bold tracking-widest">Facturación Neta</span>
+                        <p class="text-3xl md:text-4xl font-black mt-2">$1.85M</p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-12 md:gap-20 items-start mb-12">
+                    <div class="space-y-8">
+                        <h3 class="text-3xl md:text-5xl font-bold uppercase leading-tight">
+                            Escalamiento <span class="gold-accent">Exponencial</span> de Operaciones
+                        </h3>
+                        <div class="space-y-6 text-gray-300 text-lg leading-relaxed">
+                            <p>Tomé el control de una marca con una estructura mínima y la transformé en un motor de ventas de alto rendimiento. En solo 9 meses, validé el mercado y escalé hasta alcanzar una facturación de <strong>$1,851,070.75</strong>.</p>
+                            <ul class="space-y-4">
+                                <li class="flex items-start gap-3"><span class="text-gold">▲</span><span><strong>Eficiencia en Ads:</strong> Prospectos desde <strong>$5.13</strong>.</span></li>
+                                <li class="flex items-start gap-3"><span class="text-gold">▲</span><span><strong>Gestión de Talento:</strong> Expansión de la fuerza de ventas (1 a 12).</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="link-card p-10 border-gold/40 relative overflow-hidden group">
+                            <div class="absolute -right-4 -top-4 text-gold/10 text-9xl font-black">ROI</div>
+                            <span class="text-gold text-[10px] font-bold uppercase tracking-widest">Métrica Final</span>
+                            <h4 class="text-6xl md:text-7xl font-black mt-4">92.5x</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <button onclick="openViewer('heyzine')" class="link-card p-6 flex justify-between items-center group">
+                        <span class="font-bold uppercase text-[10px] tracking-[0.3em]">Campaña Ads (Flipbook)</span>
+                        <span class="gold-accent">↓</span>
+                    </button>
+                    <button onclick="openViewer('drive')" class="link-card p-6 flex justify-between items-center group bg-gold/5 border-gold/30">
+                        <span class="font-bold uppercase text-[10px] tracking-[0.3em] text-gold">Ver Reporte de Ventas Detallado</span>
+                        <span class="gold-accent">↓</span>
+                    </button>
+                </div>
+
+                <div id="unified-viewer" class="hidden w-full h-[80vh] border border-gold/20 bg-zinc-900/90 rounded-lg overflow-hidden mt-8">
+                    <div class="flex justify-between items-center bg-black/50 p-4 border-b border-white/10">
+                        <span id="viewer-label" class="text-[10px] uppercase tracking-widest text-gold font-bold italic"></span>
+                        <button onclick="closeViewer()" class="text-white hover:text-red-500 uppercase text-[10px] font-black tracking-widest">[ Cerrar Visor ]</button>
+                    </div>
+                    <iframe id="iframe-viewer" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="max-w-7xl w-full mx-auto reveal">
+                <h3 class="huge-title text-5xl md:text-6xl mb-12 opacity-30">Experiencia Adicional & Técnica</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="link-card p-8">
+                        <span class="text-gold text-[10px] font-bold uppercase tracking-widest">2016-19 | RIDSA</span>
+                        <h4 class="text-xl font-bold mt-4 uppercase">Diseño Industrial</h4>
+                        <p class="text-xs text-gray-400 mt-2">Logotipos y publicidad para el sector industrial.</p>
+                    </div>
+                    <div class="link-card p-8">
+                        <span class="text-gold text-[10px] font-bold uppercase tracking-widest">2016-19 | BOLPACK</span>
+                        <h4 class="text-xl font-bold mt-4 uppercase">Identidad Corporativa</h4>
+                        <p class="text-xs text-gray-400 mt-2">Fichas técnicas, catálogos y uniformes corporativos.</p>
+                    </div>
+                    <div class="link-card p-8 border-gold/40 bg-gold/10">
+                        <span class="text-gold text-[10px] font-bold uppercase tracking-widest">2013-16 | TEXTI GRAF</span>
+                        <h4 class="text-xl font-bold mt-4 uppercase">Instructor Técnico</h4>
+                        <p class="text-xs text-gray-400 mt-2">Vectorización profesional y experto en CorelDRAW.</p>
+                    </div>
+                    <div class="link-card p-8">
+                        <span class="text-gold text-[10px] font-bold uppercase tracking-widest">2012-13 | MERKATEGIA</span>
+                        <h4 class="text-xl font-bold mt-4 uppercase">Análisis de Marca</h4>
+                        <p class="text-xs text-gray-400 mt-2">Estudio de competencia, posicionamiento y creación de branding .</p>
+                    </div>
+                    <div class="link-card p-8">
+                        <span class="text-gold text-[10px] font-bold uppercase tracking-widest">2011-12 | LONAS y ETIQUETAS </span>
+                        <h4 class="text-xl font-bold mt-4 uppercase">Producción</h4>
+                        <p class="text-xs text-gray-400 mt-2">Diseño, logística y control de materiales publicitarios.</p>
+                    </div>
+                    <div class="link-card p-8 border-white/20">
+                        <span class="text-gold text-[10px] font-bold uppercase tracking-widest">ACTUAL | INDEPENDIENTE</span>
+                        <h4 class="text-xl font-bold mt-4 uppercase">Consultoría Estratégica</h4>
+                        <p class="text-xs text-gray-300 mt-2">Elevando identidades corporativas y branding integral externo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-zinc-950/60">
+            <div class="max-w-4xl w-full mx-auto text-center reveal">
+                <span class="gold-accent font-bold tracking-[0.4em] uppercase text-[10px] mb-6 block">¿Listo para el siguiente nivel?</span>
+                <h2 class="huge-title text-6xl md:text-9xl uppercase mb-12">Hablemos de <br><span class="gold-accent">Resultados.</span></h2>
+                
+                <div class="flex justify-center">
+                    <a href="https://wa.me/5213339925315?text=Hola%20Luis,%20vi%20tu%20portafolio%20y%20me%20gustaría%20agendar%20una%20consultoría." 
+                       target="_blank" 
+                       class="link-card px-12 py-6 flex items-center gap-6 group border-gold/50 hover:bg-gold/10">
+                        <div class="text-left">
+                            <span class="text-[10px] text-gold font-black uppercase tracking-widest block mb-1">Contacto Directo</span>
+                            <span class="text-xl md:text-2xl font-bold uppercase">Enviar Mensaje a WhatsApp</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-full border border-gold/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="gold-accent">→</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <p class="mt-12 text-gray-500 text-[10px] uppercase tracking-[0.2em]">Disponibilidad para consultoría estratégica y gestión de marca.</p>
+            </div>
+        </section>
+
+        <footer class="py-24 text-center reveal">
+            <p class="huge-title text-7xl md:text-[15rem] gold-accent leading-none">CASHER</p>
+            <p class="text-[10px] md:text-sm uppercase tracking-[0.6em] mt-10 opacity-40">Creatividad Estratégica</p>
+            <p class="mt-20 text-[10px] opacity-20">Luis Arturo Casher © 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        // DETECCIÓN SIMPLIFICADA Y ROBUSTA PARA SAFARI iOS
+        function detectSafariIOS() {
+            var ua = navigator.userAgent || '';
+            var vendor = navigator.vendor || '';
+            
+            // Verificar si es iOS
+            var isIOS = /iphone|ipad|ipod/i.test(ua);
+            
+            // Verificar si es Safari (no Chrome)
+            var isSafari = /safari/i.test(ua) && !/chrome|crios|android/i.test(ua);
+            
+            // Verificar si es Chrome en iOS (crios)
+            var isChromeIOS = /crios/i.test(ua);
+            
+            // Verificar si es Chrome normal
+            var isChrome = /chrome/i.test(ua) && /google/i.test(vendor);
+            
+            // Verificar si es Android
+            var isAndroid = /android/i.test(ua);
+            
+            console.log('=== DETECCIÓN DE NAVEGADOR ===');
+            console.log('iOS:', isIOS);
+            console.log('Safari:', isSafari);
+            console.log('Chrome iOS:', isChromeIOS);
+            console.log('Chrome:', isChrome);
+            console.log('Android:', isAndroid);
+            
+            // SOLO bloquear si es Safari en iOS (no Chrome, no Android)
+            if (isAndroid) {
+                console.log('RESULTADO: Android - NO BLOQUEAR');
+                return false;
+            }
+            
+            if (isChrome || isChromeIOS) {
+                console.log('RESULTADO: Chrome - NO BLOQUEAR');
+                return false;
+            }
+            
+            if (isIOS && isSafari) {
+                console.log('RESULTADO: Safari iOS - BLOQUEAR');
+                return true;
+            }
+            
+            if (!isIOS && isSafari) {
+                console.log('RESULTADO: Safari Desktop - BLOQUEAR');
+                return true;
+            }
+            
+            console.log('RESULTADO: Otro navegador - NO BLOQUEAR');
+            return false;
+        }
+
+        function initPage() {
+            console.log('=== INICIANDO PÁGINA ===');
+            
+            var blocker = document.getElementById('chrome-blocker');
+            var content = document.getElementById('main-content');
+            var isSafari = detectSafariIOS();
+            
+            try {
+                if (isSafari) {
+                    // MOSTRAR BLOQUEADOR
+                    console.log('Mostrando bloqueador...');
+                    blocker.classList.remove('hidden-blocker');
+                    blocker.style.display = 'flex';
+                    content.style.display = 'none';
+                    content.classList.remove('visible-content');
+                    document.body.style.overflow = 'hidden';
+                    console.log('✅ Bloqueador mostrado');
+                } else {
+                    // MOSTRAR CONTENIDO
+                    console.log('Mostrando contenido...');
+                    blocker.classList.add('hidden-blocker');
+                    blocker.style.display = 'none';
+                    content.style.display = 'block';
+                    content.classList.add('visible-content');
+                    document.body.style.overflow = '';
+                    console.log('✅ Contenido mostrado');
+                    
+                    // Inicializar canvas y animaciones
+                    if (typeof init === 'function') init();
+                }
+            } catch (error) {
+                console.error('❌ Error al inicializar:', error);
+                // En caso de error, mostrar contenido por defecto
+                blocker.style.display = 'none';
+                content.style.display = 'block';
+            }
+        }
+
+        function openInChrome() {
+            console.log('=== ABRIR EN CHROME ===');
+            var currentURL = window.location.href;
+            var ua = navigator.userAgent || '';
+            var isIOS = /iphone|ipad|ipod/i.test(ua);
+            var isAndroid = /android/i.test(ua);
+            
+            console.log('URL actual:', currentURL);
+            console.log('iOS:', isIOS);
+            console.log('Android:', isAndroid);
+            
+            try {
+                if (isIOS) {
+                    console.log('Intentando abrir en Chrome iOS...');
+                    // iOS: Usar esquema googlechrome://
+                    var chromeURL = 'googlechrome://' + currentURL.replace(/^https?:\/\//, '');
+                    console.log('URL Chrome:', chromeURL);
+                    
+                    // Intentar abrir
+                    window.location.href = chromeURL;
+                    
+                    // Si no funciona después de 2.5 segundos
+                    setTimeout(function() {
+                        console.log('Chrome no se abrió automáticamente');
+                        var confirmed = confirm('¿Chrome no se abrió?\n\nToca ACEPTAR para copiar la URL y abrirla manualmente en Chrome');
+                        if (confirmed) {
+                            copyURL();
+                        }
+                    }, 2500);
+                    
+                } else if (isAndroid) {
+                    console.log('Intentando abrir en Chrome Android...');
+                    // Android: Usar intent://
+                    var intentURL = 'intent://' + currentURL.replace(/^https?:\/\//, '') + '#SafariUrl{current_url}';
+                    window.location.href = intentURL;
+                    
+                    setTimeout(function() {
+                        // Fallback a googlechrome://
+                        window.location.href = 'googlechrome://' + currentURL.replace(/^https?:\/\//, '');
+                    }, 1000);
+                    
+                } else {
+                    console.log('Intentando abrir en Chrome Desktop...');
+                    // Desktop: googlechrome://
+                    window.location.href = 'googlechrome://' + currentURL;
+                }
+            } catch (error) {
+                console.error('Error al abrir Chrome:', error);
+                alert('Error al abrir Chrome. Por favor copia la URL manualmente.');
+                copyURL();
+            }
+        }
+
+        function copyURL() {
+            console.log('=== COPIAR URL ===');
+            var currentURL = window.location.href;
+            var btn = document.getElementById('copyBtn');
+            
+            console.log('URL a copiar:', currentURL);
+            
+            // Método moderno
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(currentURL).then(function() {
+                    console.log('✅ URL copiada con clipboard API');
+                    showCopiedMessage(btn);
+                }).catch(function(err) {
+                    console.error('❌ Error clipboard API:', err);
+                    fallbackCopy(currentURL, btn);
+                });
+            } else {
+                console.log('Usando fallback copy');
+                fallbackCopy(currentURL, btn);
+            }
+        }
+
+        function fallbackCopy(text, btn) {
+            try {
+                var textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                var successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                if (successful) {
+                    console.log('✅ URL copiada con execCommand');
+                    showCopiedMessage(btn);
+                } else {
+                    console.error('❌ execCommand falló');
+                    manualPrompt(text);
+                }
+            } catch (err) {
+                console.error('❌ Error en fallback copy:', err);
+                manualPrompt(text);
+            }
+        }
+
+        function showCopiedMessage(btn) {
+            if (!btn) btn = document.getElementById('copyBtn');
+            var originalText = btn.innerHTML;
+            btn.innerHTML = '✅ ¡Copiada! Ahora abre Chrome y pega';
+            btn.classList.add('copied');
+            
+            setTimeout(function() {
+                btn.innerHTML = originalText;
+                btn.classList.remove('copied');
+            }, 4000);
+        }
+
+        function manualPrompt(text) {
+            prompt('Copia esta URL y pégala en Chrome:', text);
+        }
+
+        // Funciones del portafolio
+        function showImage(url) {
+            var modal = document.getElementById('image-modal');
+            var img = document.getElementById('modal-img');
+            img.src = url;
+            modal.style.display = 'flex';
+        }
+
+        function openProject(url, title) {
+            var pv = document.getElementById('project-viewer');
+            var pif = document.getElementById('iframe-project');
+            var pl = document.getElementById('project-label');
+            pv.classList.remove('hidden');
+            pif.src = url;
+            pl.innerText = title;
+            setTimeout(function() {
+                pv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 150);
+        }
+
+        function closeProject() {
+            document.getElementById('project-viewer').classList.add('hidden');
+            document.getElementById('iframe-project').src = '';
+        }
+
+        function openByoViewer() {
+            var bv = document.getElementById('byo-viewer');
+            document.getElementById('iframe-byo').src = 'https://heyzine.com/flip-book/eca3beafee.html';
+            bv.classList.remove('hidden');
+            setTimeout(function() {
+                bv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+
+        function closeByoViewer() {
+            document.getElementById('byo-viewer').classList.add('hidden');
+            document.getElementById('iframe-byo').src = '';
+        }
+
+        function openViewer(type) {
+            var uv = document.getElementById('unified-viewer');
+            var uif = document.getElementById('iframe-viewer');
+            var ul = document.getElementById('viewer-label');
+            uv.classList.remove('hidden');
+            if(type === 'heyzine') {
+                ul.innerText = 'Campaña Ads - Flipbook';
+                uif.src = 'https://heyzine.com/flip-book/3f0214726e.html';
+            } else {
+                ul.innerText = 'Reporte de Ventas';
+                uif.src = 'https://lh3.googleusercontent.com/d/1yrLleLlWdJoKcPkn-_UFJx_M25weie4c';
+            }
+            setTimeout(function() {
+                uv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+
+        function closeViewer() {
+            document.getElementById('unified-viewer').classList.add('hidden');
+            document.getElementById('iframe-viewer').src = '';
+        }
+
+        // Canvas
+        var canvas = document.getElementById('bg-canvas');
+        var ctx = canvas.getContext('2d');
+        var dots = [];
+        function init() {
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight;
+            dots = [];
+            for(var i=0; i<60; i++) {
+                dots.push({ 
+                    x: Math.random() * canvas.width, 
+                    y: Math.random() * canvas.height, 
+                    r: Math.random() * 2, 
+                    v: Math.random() * 0.4 + 0.1 
+                });
+            }
+        }
+        function draw() {
+            ctx.clearRect(0,0,canvas.width, canvas.height); 
+            ctx.fillStyle = 'rgba(212, 175, 55, 0.4)';
+            dots.forEach(function(d) { 
+                d.y -= d.v; 
+                if(d.y < 0) d.y = canvas.height; 
+                ctx.beginPath(); 
+                ctx.arc(d.x, d.y, d.r, 0, Math.PI*2); 
+                ctx.fill(); 
+            });
+            requestAnimationFrame(draw);
+        }
+        init(); 
+        draw(); 
+        window.onresize = init;
+
+        // Reveal
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) { 
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.reveal').forEach(function(el) {
+            observer.observe(el);
+        });
+
+        // EJECUTAR AL CARGAR - MÚLTIPLES INTENTOS
+        console.log('=== CARGANDO PÁGINA ===');
+        
+        // Intento 1: Inmediato
+        initPage();
+        
+        // Intento 2: Cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('DOM Content Loaded');
+                initPage();
+            });
+        }
+        
+        // Intento 3: Cuando la página cargue completamente
+        window.addEventListener('load', function() {
+            console.log('Window Load');
+            initPage();
+        });
+        
+        // Intentos adicionales con timeout
+        setTimeout(initPage, 100);
+        setTimeout(initPage, 500);
+        setTimeout(initPage, 1000);
+    </script>
+</body>
+</html>
